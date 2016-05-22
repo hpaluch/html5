@@ -17,6 +17,7 @@
 			font-size: small;
 		}
 		.clearer { clear: both; }
+		footer { margin-top: 40px; font-size: x-small; border-top: 1px solid #eee; }
 	  </style>
   </head>
   <body>
@@ -39,7 +40,9 @@
 
 	</div>
 	<div class="clearer"></div>
-	<div>Footer</div>
+	<footer>
+		See <a href="https://github.com/hpaluch/html5/tree/master/knob_canvas" target="github">Source on GitHub</a>
+	</footer>
 	<script src="resources/redist/jquery.min.js"></script>
 	<script src="resources/redist/jcanvas.min.js"></script>
 	<script src="resources/KnobCanvas.js"></script>	  
@@ -59,11 +62,12 @@
 			$("<div>",{ id: 'value'+i }).appendTo($floatBox);
 			$('#container').append($floatBox);
 
-			var angle  = Math.PI/4*(i-1);
+			var angle  = Math.PI/4*(i-2);
 			var canvas = new KnobCanvas( $('#canvas'+i),angle );
 			canvas.show();
-			$('#value'+i).text('Angle: '+Number(angle).toFixed(2)
-				+' [rad], '+angle*180/Math.PI+' [Deg]');
+			var realAngle = canvas.angle;
+			$('#value'+i).text('Angle: '+Number(realAngle).toFixed(2)
+				+' [rad], '+realAngle*180/Math.PI+' [Deg]');
 		    }
 		  $('#loading').hide();
 		 });

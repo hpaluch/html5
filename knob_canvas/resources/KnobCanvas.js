@@ -25,9 +25,33 @@ if (!( $Element.prop('getContext'))){
 	this.yCenter = this.height/2;
 	this.knobRadius = 0.40*this.box; // radius is half box :-)
                                          // minus small amount for margins
-	this.angle = angle; // angle of knob in radians
+	this.angle =  angle; // angle of knob in radians
 };
 
+// static (non-instance methods)
+KnobCanvas.fnNormalizeAngle = function (angle){
+	var timesOverflow = Math.abs(Math.floor( angle / 2 / Math.PI ));
+	if ( timesOverflow >= 1 ){
+		angle = angle - timesOverflow * 2 * Math.PI;
+	}
+	// revert angle if negative
+	if ( angle < 0.00 ){
+		angle = 2 * Math.PI + angle;
+	}
+	return angle;
+};
+
+// getter and setters
+KnobCanvas.prototype = {
+	get angle(){
+		  return this._angle;
+	 },
+	set angle(__angle){
+		this._angle = KnobCanvas.fnNormalizeAngle( __angle );
+	}
+}
+
+// instance methods
 KnobCanvas.prototype.show = function(){
 	// draw rectangle of future border frame (black)
 	this.$Element.drawRect({
@@ -58,8 +82,8 @@ KnobCanvas.prototype.show = function(){
 
 	// knob mark
         // FIXME: compute coeficient 0.80 with current box...
-	var  markX = 0.70*this.knobRadius * Math.cos( this.angle ) + this.xCenter;
-	var  markY = -0.70*this.knobRadius * Math.sin( this.angle ) + this.xCenter;
+	var  markX = 0.70*this.knobRadius * Math.cos( this._angle ) + this.xCenter;
+	var  markY = -0.70*this.knobRadius * Math.sin( this._angle ) + this.xCenter;
 
 	// draw  knob mark
 	this.$Element.drawArc({
