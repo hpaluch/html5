@@ -1,0 +1,72 @@
+<!DOCTYPE html >
+<html>
+  <head>
+  	  <meta charset="utf-8">
+  	  <title>Knob using Canvas</title>
+	  <style>
+		h6 { margin: 4px; }
+		.floatbox {
+			width: 200px; height: 150px;
+			float: left;
+			border: 1px solid #eee;
+			padding: 4px;
+			margin: 4px;
+		}
+		.floatbox canvas { margin-left: 50px;  } 
+		.floatbox div {
+			font-size: small;
+		}
+		.clearer { clear: both; }
+	  </style>
+  </head>
+  <body>
+	<h1>Knob using HTML5 Canvas</h1>
+	<blockquote>
+		Work in progress (no animation, no mouse interaction yet).
+	</blockquote>
+	<div id="container">
+	<h2 id="loading">Loading....</h2>
+
+<!--
+	<div class="floatbox">
+		<h6>Canvas 1</h6>
+		<canvas id="canvas1" width="150" height="100">
+			Sorry, your browser does not support canvas!
+		</canvas>
+		<div id="value1">Value</div>
+	</div>
+-->
+
+	</div>
+	<div class="clearer"></div>
+	<div>Footer</div>
+	<script src="resources/redist/jquery.min.js"></script>
+	<script src="resources/redist/jcanvas.min.js"></script>
+	<script src="resources/KnobCanvas.js"></script>	  
+	<script type="text/javascript" >
+		 $(document).ready(function() {
+		    for(i=1;i<=8;i++){
+
+			var $floatBox = $("<div>",{ class: 'floatbox' });
+			$("<h6>").text("Canvas #"+i).appendTo($floatBox);
+			// XXX: do not pass width/height as attributes!!!
+			// it would set transformed boundaries, but canvas
+			//  original size will remain 300...
+			$("<canvas height='100' width='150' id='canvas"+i+"'></canvas>")
+				.text("Sorry, your browser does not support canvas!")
+				.appendTo($floatBox);
+
+			$("<div>",{ id: 'value'+i }).appendTo($floatBox);
+			$('#container').append($floatBox);
+
+			var angle  = Math.PI/4*(i-1);
+			var canvas = new KnobCanvas( $('#canvas'+i),angle );
+			canvas.show();
+			$('#value'+i).text('Angle: '+Number(angle).toFixed(2)
+				+' [rad], '+angle*180/Math.PI+' [Deg]');
+		    }
+		  $('#loading').hide();
+		 });
+	</script>			  
+  </body>
+</html>
