@@ -25,6 +25,13 @@ if (!( $Element.prop('getContext'))){
 	this.yCenter = this.height/2;
 	this.knobRadius = 0.40*this.box; // radius is half box :-)
                                          // minus small amount for margins
+
+	// TODO parameters...
+	this.knobFillColor = '#ddd';
+	this.markColor     = '#f00';
+
+	this.showCalled = false;
+	// warning - setter/getter - may redraw
 	this.angle =  angle; // angle of knob in radians
 };
 
@@ -32,11 +39,11 @@ if (!( $Element.prop('getContext'))){
 KnobCanvas.fnNormalizeAngle = function (angle){
 	var timesOverflow = Math.abs(Math.floor( angle / 2 / Math.PI ));
 	if ( timesOverflow >= 1 ){
-		angle = angle - timesOverflow * 2 * Math.PI;
+		angle = angle - Math.sign(angle) * timesOverflow * 2 * Math.PI;
 	}
 	// revert angle if negative
 	if ( angle < 0.00 ){
-		angle = 2 * Math.PI + angle;
+		angle = 2.0 * Math.PI + angle;
 	}
 	return angle;
 };
@@ -48,6 +55,20 @@ KnobCanvas.prototype = {
 	 },
 	set angle(__angle){
 		this._angle = KnobCanvas.fnNormalizeAngle( __angle );
+
+		if (this.showCalled){
+			// remove mark on old position
+			this.drawMark (this.knobFillColor,5);
+		}
+
+		// knob mark
+		// FIXME: compute coeficient 0.80 with current box...
+		this.markX = 0.70*this.knobRadius * Math.cos( this._angle ) + this.xCenter;
+		this.markY = -0.70*this.knobRadius * Math.sin( this._angle ) + this.xCenter;
+		if (this.showCalled){
+			// draw mark on new position
+			this.drawMark();
+		}
 	}
 }
 
@@ -73,32 +94,39 @@ KnobCanvas.prototype.show = function(){
 	// draw  knob circle
 	this.$Element.drawArc({
 	  strokeStyle: '#000',
-	  fillStyle: '#ddd',
+	  fillStyle: this.knobFillColor,
 	  strokeWidth: 2,
 	  x: this.xCenter, y: this.yCenter,
 	  radius: this.knobRadius,
 	  closed: true
 	});
 
-	// knob mark
-        // FIXME: compute coeficient 0.80 with current box...
-	var  markX = 0.70*this.knobRadius * Math.cos( this._angle ) + this.xCenter;
-	var  markY = -0.70*this.knobRadius * Math.sin( this._angle ) + this.xCenter;
+	this.drawMark();
 
-	// draw  knob mark
-	this.$Element.drawArc({
-	  strokeStyle: '#f00',
-	  fillStyle: '#f00',
-	  strokeWidth: 2,
-	  x: markX, y: markY,
-	  radius: 4,
-	  closed: true
-	});
-
-
+	this.showCalled = true;
 
 	console.log("show");
 };
+
+KnobCanvas.prototype.drawMark = function (color,radius){
+	// draw  knob mark
+	this.$Element.drawArc({
+	  strokeStyle: color || this.markColor,
+	  fillStyle: color || this.markColor,
+	  strokeWidth: 2,
+	  x: this.markX, y: this.markY,
+	  radius: radius || 4,
+	  closed: true
+	});
+};
+
+// removing KnobMark (when angle changes)...
+KnobCanvas.prototype.clearMark = function(){
+
+	this.drawMark( this.knobFillColor );
+};
+
+
 
 
 

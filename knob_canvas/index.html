@@ -23,7 +23,7 @@
   <body>
 	<h1>Knob using HTML5 Canvas</h1>
 	<blockquote>
-		Work in progress (no animation, no mouse interaction yet).
+		Work in progress (no mouse interaction yet).
 	</blockquote>
 	<div id="container">
 	<h2 id="loading">Loading....</h2>
@@ -48,6 +48,9 @@
 	<script src="resources/KnobCanvas.js"></script>	  
 	<script type="text/javascript" >
 		 $(document).ready(function() {
+
+		    var knobCanvases = [];
+
 		    for(i=1;i<=8;i++){
 
 			var $floatBox = $("<div>",{ class: 'floatbox' });
@@ -63,13 +66,27 @@
 			$('#container').append($floatBox);
 
 			var angle  = Math.PI/4*(i-2);
-			var canvas = new KnobCanvas( $('#canvas'+i),angle );
-			canvas.show();
-			var realAngle = canvas.angle;
+
+			knobCanvases[i-1] = new KnobCanvas( $('#canvas'+i),angle );
+			knobCanvases[i-1].show();
+			var realAngle = knobCanvases[i-1].angle;
 			$('#value'+i).text('Angle: '+Number(realAngle).toFixed(2)
-				+' [rad], '+realAngle*180/Math.PI+' [Deg]');
+				+' [rad], '+Math.floor(realAngle*180/Math.PI)+' [Deg]');
 		    }
 		  $('#loading').hide();
+
+		 // animate 1st knob
+		$("h6").first().text("Canvas #1 (animated)");
+		var tmFunc = function(){
+			var newAngle = knobCanvases[0].angle+0.5/Math.PI;
+			knobCanvases[0].angle = newAngle;
+			$('#value1').text('Angle: '+Number(newAngle).toFixed(2)
+				+' [rad], '+Math.floor(newAngle*180/Math.PI)+' [Deg]');
+			setTimeout(tmFunc,200);
+		}
+ 
+		setTimeout(tmFunc,200);
+
 		 });
 	</script>			  
   </body>

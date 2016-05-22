@@ -13,6 +13,7 @@ TODO
 * mouse sensitivity
   * click changes angle
   * drag changes angle
+* parametrize background, knob color, mark color....
 
 
 
