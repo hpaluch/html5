@@ -5,7 +5,7 @@
 "use strict";
 
 
-var KnobCanvas = function KnobCanvas($Element,angle){
+var KnobCanvas = function KnobCanvas($Element,_angle){
 	if ( typeof jQuery === 'undefined' ){
 		throw new Error("jQuery object undefined - probably jquery.min.sjs not included?");
 	}
@@ -16,6 +16,8 @@ if (!( $Element.prop('getContext'))){
 		throw new Error("Passed Element has not property getContext (not Canvas?) ");
 	}
 	this.$Element = $Element;
+	this.changeCallbacks = [];
+	this.insideChangeCallbacks = false;
 	// compute inside box of width (minimum)
 	this.box = Math.min( $Element.prop('width'), $Element.prop('height'));
 	// atempt to be ready for non-box rectangle
@@ -31,8 +33,8 @@ if (!( $Element.prop('getContext'))){
 	this.markColor     = '#f00';
 
 	this.showCalled = false;
-	// warning - setter/getter - may redraw
-	this.angle =  angle; // angle of knob in radians
+	// setter/getter
+	this.angle =  _angle; // angle of knob in radians
 };
 
 // static (non-instance methods)
@@ -54,6 +56,9 @@ KnobCanvas.prototype = {
 		  return this._angle;
 	 },
 	set angle(__angle){
+
+		// TODO: detect real change...
+
 		this._angle = KnobCanvas.fnNormalizeAngle( __angle );
 
 		if (this.showCalled){
@@ -69,6 +74,8 @@ KnobCanvas.prototype = {
 			// draw mark on new position
 			this.drawMark();
 		}
+		
+		this.fireChangeCallbacks();
 	}
 }
 
@@ -124,6 +131,34 @@ KnobCanvas.prototype.drawMark = function (color,radius){
 KnobCanvas.prototype.clearMark = function(){
 
 	this.drawMark( this.knobFillColor );
+};
+
+// 
+KnobCanvas.prototype.addChangeCallback = function(fnCallback){
+
+	if ( 'function' != typeof fnCallback ){
+		throw new Error("Passwd fnCallback is not function but "
+			+(typeof fnCallback));
+	}
+	this.changeCallbacks.push(fnCallback);
+};
+
+KnobCanvas.prototype.fireChangeCallbacks = function(){
+		if (this.insideChangeCallbacks){
+			throw new Error("changeCallbacks recursion detected!");
+		}
+		this.insideChangeCallbacks = true;
+
+		// XXX NEVER forget var, otherwise this 'i'
+                //     will garble outer i (in index.html) !!!
+		for(var i in this.changeCallbacks){
+			// XXX very verbose...
+			// console.log("Firing changeCallback %s (%f)",
+		        // 			this.changeCallbacks[i],this._angle);
+			this.changeCallbacks[i](this._angle);
+		}
+		this.insideChangeCallbacks = false;
+
 };
 
 

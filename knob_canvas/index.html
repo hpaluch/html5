@@ -28,7 +28,7 @@
 	<div id="container">
 	<h2 id="loading">Loading....</h2>
 
-<!--
+<!-- Just template
 	<div class="floatbox">
 		<h6>Canvas 1</h6>
 		<canvas id="canvas1" width="150" height="100">
@@ -51,7 +51,7 @@
 
 		    var knobCanvases = [];
 
-		    for(i=1;i<=8;i++){
+		    for(i=1;i<=2;i++){
 
 			var $floatBox = $("<div>",{ class: 'floatbox' });
 			$("<h6>").text("Canvas #"+i).appendTo($floatBox);
@@ -69,10 +69,25 @@
 
 			knobCanvases[i-1] = new KnobCanvas( $('#canvas'+i),angle );
 			knobCanvases[i-1].show();
-			var realAngle = knobCanvases[i-1].angle;
-			$('#value'+i).text('Angle: '+Number(realAngle).toFixed(2)
-				+' [rad], '+Math.floor(realAngle*180/Math.PI)+' [Deg]');
+
+			// alert('outer i='+i);
+
+			// XXX: very important - to avoid closure issues
+			//      with 'i' change ...
+			(function(_i){
+			  var fnCallback = function(angleRad){ 
+				//  alert(" _i="+_i+" i="+i);
+				$('#value'+_i) 
+				 .text('Angle: '+Number(angleRad) 
+				 .toFixed(2) +' [rad], ' 
+			        	+Math.floor(angleRad*180/Math.PI) 
+					+' [Deg]'); 
+				};
+			  knobCanvases[_i-1].addChangeCallback(fnCallback);
+			})(i);
+			knobCanvases[i-1].fireChangeCallbacks();
 		    }
+
 		  $('#loading').hide();
 
 		 // animate 1st knob
@@ -80,8 +95,6 @@
 		var tmFunc = function(){
 			var newAngle = knobCanvases[0].angle+0.5/Math.PI;
 			knobCanvases[0].angle = newAngle;
-			$('#value1').text('Angle: '+Number(newAngle).toFixed(2)
-				+' [rad], '+Math.floor(newAngle*180/Math.PI)+' [Deg]');
 			setTimeout(tmFunc,200);
 		}
  
