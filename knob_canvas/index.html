@@ -17,13 +17,15 @@
 			font-size: small;
 		}
 		.clearer { clear: both; }
+		canvas { cursor: crosshair; }
 		footer { margin-top: 40px; font-size: x-small; border-top: 1px solid #eee; }
+		blockquote { border-left: 2px solid #eee; }
 	  </style>
   </head>
   <body>
 	<h1>Knob using HTML5 Canvas</h1>
 	<blockquote>
-		Work in progress (no mouse interaction yet).
+		TIP: Click on knob to change its angle...
 	</blockquote>
 	<div id="container">
 	<h2 id="loading">Loading....</h2>
@@ -51,7 +53,7 @@
 
 		    var knobCanvases = [];
 
-		    for(i=1;i<=2;i++){
+		    for(i=1;i<=4;i++){
 
 			var $floatBox = $("<div>",{ class: 'floatbox' });
 			$("<h6>").text("Canvas #"+i).appendTo($floatBox);
@@ -95,11 +97,10 @@
 		var tmFunc = function(){
 			var newAngle = knobCanvases[0].angle+0.5/Math.PI;
 			knobCanvases[0].angle = newAngle;
-			setTimeout(tmFunc,200);
+			setTimeout(tmFunc,500);
 		}
+		setTimeout(tmFunc,500);
  
-		setTimeout(tmFunc,200);
-
 		 });
 	</script>			  
   </body>

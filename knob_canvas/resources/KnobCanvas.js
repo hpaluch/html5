@@ -81,21 +81,33 @@ KnobCanvas.prototype = {
 
 // instance methods
 KnobCanvas.prototype.show = function(){
+	if (!this.showCalled){
+		var outerThis = this;
+		this.$Element.click(function(ev){
+				outerThis.handleClick(ev);
+		});
+	}
 	// draw rectangle of future border frame (black)
 	this.$Element.drawRect({
 	  fromCenter: false, // WTF...
 	  fillStyle: '#000',
 	  x: 0, y: 0,
 	  width: this.width,
-	  height: this.height
+	  height: this.height /*,
+	  layer: true,
+	  click: function (arg){
+			alert("Click!"+arg);
+			outerThis.handleClick(arg);
+	  } */
 	});
+
 	// draw inside of border (white)
 	this.$Element.drawRect({
 	  fromCenter: false, // WTF...
 	  fillStyle: '#fff',
 	  x: 1, y: 1,
 	  width:  this.width-2,
-	  height: this.height-2 
+	  height: this.height-2
 	});	
 
 	// draw  knob circle
@@ -161,7 +173,32 @@ KnobCanvas.prototype.fireChangeCallbacks = function(){
 
 };
 
+KnobCanvas.prototype.handleClick = function(ev){
 
+	// get relative mouse position - real mess...
+        // see: http://stackoverflow.com/questions/2159044/getting-the-x-y-coordinates-of-a-mouse-click-on-an-image-with-jquery
+	var $canvas = $(ev.target);
+	var offset = $canvas.offset();
+	var x = ev.clientX - offset.left;
+	var y = ev.clientY - offset.top;
+//	console.log('clicked at x: %d, y: %d',x,y);
 
+	// relative coordinates on circle
+	var cX = x - this.xCenter;
+	var cY = - y + this.yCenter;
+//	console.log('clicked at cX: %d, cY: %d',cX,cY);
+
+	// we can't realiably compute angle nearby center of button - ignored
+	if ( Math.abs(cX) < 4 && Math.abs(cY) < 4 ){
+		console.warn("clicked nearby center - ignored (%d,%d)",cX,cY);
+		return;
+	}
+
+	var newAngle = Math.atan2(cY,cX);
+        console.log("new Angle"+newAngle);	
+	// redraw knob
+	this.angle = newAngle;
+
+};
 
 
