@@ -6,7 +6,7 @@ Here is Control Knob project using HTML 5 inline SVG feature
 
 See [Live Demo](https://hpaluch.github.io/html5/knob_svg/)!
 
-> WARNING: it is prototype only (all code embedded into main index.html
+> WARNING: it is prototype only (all code embedded into main index.html)
 > page
 
 
