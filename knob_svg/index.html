@@ -1,0 +1,129 @@
+<!DOCTYPE html >
+<html>
+  <head>
+  	  <meta charset="utf-8">
+  	  <title>Knob using SVG</title>
+	  <style>
+		h6 { margin: 4px; }
+		.floatbox {
+			width: 200px; height: 150px;
+			float: left;
+			border: 1px solid #eee;
+			padding: 4px;
+			margin: 4px;
+		}
+		.floatbox svg { margin-left: 25px;  } 
+		.floatbox div {
+			font-size: small;
+		}
+		.clearer { clear: both; }
+		svg { cursor: crosshair; }
+		footer { margin-top: 40px; font-size: x-small; border-top: 1px solid #eee; }
+		blockquote { border-left: 2px solid #eee; padding-left: 4px; }
+	  </style>
+  </head>
+  <body>
+	<h1>Knob using HTML5 SVG</h1>
+	<blockquote>
+		TIP: Click on knob to change its angle...
+	</blockquote>
+	<div id="container">
+	<h2 id="loading">Loading....</h2>
+
+	<div class="floatbox">
+		<h6>SVG 1</h6>
+		<svg id="svg1" width="150" height="100" xmlns="http://www.w3.org/2000/svg">
+<!--
+			<rect x="0" y="0" width="150" height="100"
+			        style="fill:#999; stroke:#00f"/>
+-->
+			<rect x="25" y="0" width="100" height="100"
+			        style="fill:#fff; stroke:#000"/>
+			<circle id="knob" cx="75" cy="50" r="40"
+			         style="fill: #ddd; stroke: #000; stroke-width: 2" />	
+			<circle id="mark" cx="130" cy="50" r="4"
+			         style="fill: #f00; stroke: #f00; stroke-width: 2" />	
+		</svg>
+		<div id="value1">Value</div>
+	</div>
+
+	</div>
+	<div class="clearer"></div>
+	<footer>
+		See <a href="https://github.com/hpaluch/html5/tree/master/knob_svg" target="github">Source on GitHub</a>
+	</footer>
+	<script src="resources/redist/jquery.min.js"></script>
+	<script type="text/javascript" >
+		 $(document).ready(function() {
+
+			var knobRadius = $('#knob').attr('r');
+			var $mark = $('#mark');
+			// console.log("r: %d, cx: %d, cy: %d", knobRadius, $mark.attr('cx'),$mark.attr('cy'));
+
+			var $svg = $('#svg1');
+			var box = Math.min( $svg.attr('width'), $svg.attr('height') );
+			var xCenter = $svg.attr('width')/2;	
+			var yCenter = $svg.attr('height')/2;	
+			// console.log("box: %d, xCenter: %d, yCenter: %d",
+			//		box, xCenter, yCenter);
+
+			function drawMarkAtAngle($mark,angle){
+
+				// normalize angle
+				var timesOverflow = Math.abs(Math.floor( angle / 2 / Math.PI ));
+				if ( timesOverflow >= 1 ){
+					angle = angle - Math.sign(angle) * timesOverflow * 2 * Math.PI;
+				}
+				// revert angle if negative
+				if ( angle < 0.00 ){
+					angle = 2.0 * Math.PI + angle;
+				}
+				// console.log('angle: %f, deg: %d',
+				//	angle, angle*180/Math.PI);
+
+				var markX = (knobRadius-8) * Math.cos( angle ) + xCenter;
+		                var markY = -(knobRadius-8) * Math.sin( angle ) + yCenter;
+				// console.log('markX: %d, markY: %d',markX, markY);
+				// correct knob mark
+				$mark.attr('cx',markX);
+				$mark.attr('cy',markY);
+				// show value
+				$('#value1').text('Angle: '+Number(angle) 
+				 .toFixed(2) +' [rad], ' 
+			        	+Math.floor(angle*180/Math.PI) 
+					+' [Deg]');
+			};
+
+			$svg.click(function(ev){
+				// get relative mouse position - real mess...
+				// see: http://stackoverflow.com/questions/2159044/getting-the-x-y-coordinates-of-a-mouse-click-on-an-image-with-jquery
+				var offset = $svg.offset();
+				var x = ev.clientX - offset.left;
+				var y = ev.clientY - offset.top;
+				//	console.log('clicked at x: %d, y: %d',x,y);
+
+				// relative coordinates on circle
+				var cX = x - xCenter;
+				var cY = - y + yCenter;
+				console.log('clicked at cX: %d, cY: %d',cX,cY);
+
+				// we can't realiably compute angle nearby center of button - ignored
+				if ( Math.abs(cX) < 4 && Math.abs(cY) < 4 ){
+					console.warn("clicked nearby center - ignored (%d,%d)",cX,cY);
+					return;
+				}
+
+				var angle = Math.atan2(cY,cX);
+				console.log("new Angle: %f",angle);	
+
+				// redraw knob
+				drawMarkAtAngle($mark,angle);
+			});
+
+			drawMarkAtAngle($mark,0.0);
+
+			$('#loading').hide();
+		 });
+	</script>			  
+  </body>
+</html>
