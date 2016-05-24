@@ -13,5 +13,5 @@ TODO
   * drag changes angle
 * parametrize background, knob color, mark color....
 
-Go [Back to HTML5 projets](../) page.
+Go [Back to HTML5 projets](https://github.com/hpaluch/html5) page.
 
