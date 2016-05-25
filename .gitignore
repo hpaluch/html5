@@ -1,3 +1,7 @@
 *.swp
 *~
+node_modules/
+*.bak
+*.log
+error.png
 
