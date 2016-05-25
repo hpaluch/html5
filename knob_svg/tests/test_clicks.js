@@ -16,7 +16,7 @@ casper.on('remote.message', function(msg) {
 */
 
 
-casper.test.begin('KnobSVG', 5, function suite(test) {
+casper.test.begin('KnobSVG', 11, function suite(test) {
 
 	casper.start('http://localhost/html5/knob_svg/',function(){
 
@@ -34,43 +34,39 @@ casper.test.begin('KnobSVG', 5, function suite(test) {
 		test.assertSelectorHasText('#value1',text0);
 	});
 
+	// note these are initialized at begining...
 	var xCenter = 150/2;
 	var yCenter = 100/2;
+	var angleStep = 45;
+	var angleDeg = 0;
 
-	var angleDeg = 45;
-	var angle    = angleDeg * Math.PI / 180;
-	var x = 42 * Math.cos( angle ) + xCenter;
-	var y = -42 * Math.sin( angle ) + yCenter;
-
-/*
-	casper.repeat(360/45, function (){
-
-
-	}
-*/
-
-	casper.then(function() {
-		// casper.echo("x: "+x+", y: "+y);
+	casper.repeat(360/angleStep-1, function (){
+		angleDeg = angleDeg + angleStep;
+		var angle    = angleDeg * Math.PI / 180;
+		var x = 42 * Math.cos( angle ) + xCenter;
+		var y = -42 * Math.sin( angle ) + yCenter;
+		// casper.echo("angleDeg: "+angleDeg+" angle: "+angle+" x:"+x+" y:"+y);
 		casper.click('#svg1',x,y);
-	});
 
-	casper.waitFor(function(){
+		casper.waitFor(function(){
 
-		// this executes in browser
-		return casper.evaluate( function( angleDeg,angle ){
-			// our page includes jQuery, so...
-			var value1 = $('#value1').text();
-			// console.log("value1: "+value1);
-			var items = value1.split(/\s+/);
-			var gotRad = items[1];
-			var gotDeg = items[3];
-			// avoid some runding error (2 Deg, 0.02 rad)
-			return  Math.abs( gotDeg - angleDeg ) < 2 
-				&& Math.abs( gotRad - angle ) < 0.02;
-		},angleDeg, angle);
-	}, function then(){
-		test.pass("Check of angle test for Deg = "+angleDeg);
-	});
+			// this executes in browser
+			return casper.evaluate( function( angleDeg,angle ){
+				// our page includes jQuery, so...
+				var value1 = $('#value1').text();
+				// console.log("value1: "+value1);
+				var items = value1.split(/\s+/);
+				var gotRad = items[1];
+				var gotDeg = items[3];
+				// avoid some runding error (2 Deg, 0.02 rad)
+				// console.log('degE: '+Math.abs( gotDeg - angleDeg )+" radE: "+Math.abs( gotRad - angle ));
+				return  Math.abs( gotDeg - angleDeg ) < 4 
+					&& Math.abs( gotRad - angle ) < 0.04;
+			},angleDeg, angle);
+		}, function then(){
+			test.pass("Check for angle Deg = "+angleDeg);
+		}); // casper.waitFor
+	}); // casper.repeat
 
 	casper.run(function() {
 		test.done();

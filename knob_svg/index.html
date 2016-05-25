@@ -114,6 +114,9 @@
 				}
 
 				var angle = Math.atan2(cY,cX);
+				if ( angle < 0.0 ){
+					angle = 2.0 * Math.PI + angle;
+				}
 				console.log("new Angle: %f",angle);	
 
 				// redraw knob
