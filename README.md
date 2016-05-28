@@ -10,5 +10,5 @@ My HTML5 projects. Currently there are:
 
 ## My External HTML5 projects:
   
-* [Jekyll blog with Bootstrap and cache busting][https://github.com/hpaluch/jekyll-bootstrap-assets] see [Live Demo](https://hpaluch.github.io/jekyll-bootstrap-assets)
+* [Jekyll blog with Bootstrap and cache busting](https://github.com/hpaluch/jekyll-bootstrap-assets) see [Live Demo](https://hpaluch.github.io/jekyll-bootstrap-assets)
 
